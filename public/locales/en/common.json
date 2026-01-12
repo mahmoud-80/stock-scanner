@@ -1,0 +1,31 @@
+{
+    "header": {
+        "home": "Home",
+        "stocks": "Stocks",
+        "filters": "Filters",
+        "dashboard": "Dashboard",
+        "subscription": "Subscription",
+        "login": "Login",
+        "logout": "Logout"
+    },
+    "auth": {
+        "login": "Login",
+        "register": "Register",
+        "email": "Email",
+        "password": "Password",
+        "fullName": "Full Name",
+        "haveAccount": "Already have an account? Login",
+        "noAccount": "Don't have an account? Sign up"
+    },
+    "stocks": {
+        "title": "Live Stocks Table",
+        "symbol": "Symbol",
+        "name": "Stock Name",
+        "price": "Price",
+        "change": "Change",
+        "volume": "Volume",
+        "allStocks": "All Stocks",
+        "gainers": "Gainers",
+        "losers": "Losers"
+    }
+}
