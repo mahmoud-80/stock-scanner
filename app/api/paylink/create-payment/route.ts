@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 
 /**
- * Get Paylink Access Token
+ * 1️⃣ Get Paylink Access Token
  */
 async function getPaylinkAccessToken() {
   const res = await fetch(
-    `${process.env.PAYLINK_BASE_URL}/api/getAccessToken`,
+    'https://restapi.paylink.sa/api/getAccessToken',
     {
       method: 'POST',
       headers: {
@@ -18,23 +18,24 @@ async function getPaylinkAccessToken() {
     }
   );
 
-  if (!res.ok) {
-    const errorText = await res.text();
-    console.error('ACCESS TOKEN ERROR:', errorText);
+  const data = await res.json();
+
+  if (!res.ok || !data.id_token) {
+    console.error('ACCESS TOKEN ERROR:', data);
     throw new Error('FAILED_TO_GET_ACCESS_TOKEN');
   }
 
-  const data = await res.json();
-
-  // Paylink بيرجع id_token
   return data.id_token;
 }
 
+/**
+ * 2️⃣ Create Invoice
+ */
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // ✅ Validation
+    // Validation
     if (!body.amount || !body.name || !body.email) {
       return NextResponse.json(
         { error: 'MISSING_REQUIRED_FIELDS' },
@@ -42,17 +43,17 @@ export async function POST(req: Request) {
       );
     }
 
-    // 1️⃣ Get Access Token
+    // Get token
     const accessToken = await getPaylinkAccessToken();
 
-    // 2️⃣ Create Invoice
+    // Create invoice
     const response = await fetch(
-      `${process.env.PAYLINK_BASE_URL}/api/addInvoice`,
+      'https://restapi.paylink.sa/api/addInvoice',
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
           amount: Number(body.amount),
@@ -61,11 +62,6 @@ export async function POST(req: Request) {
 
           redirectUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/payment/success`,
           callBackUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/paylink/callback`,
-
-          metadata: {
-            user_id: body.user_id,
-            plan_id: body.plan_id,
-          },
 
           customer: {
             name: body.name,
@@ -77,10 +73,8 @@ export async function POST(req: Request) {
 
     const data = await response.json();
 
-    console.log('PAYLINK STATUS:', response.status);
-    console.log('PAYLINK RESPONSE:', data);
-
     if (!response.ok) {
+      console.error('CREATE INVOICE ERROR:', data);
       return NextResponse.json(data, {
         status: response.status,
       });
