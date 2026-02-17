@@ -5,7 +5,8 @@ import { NextResponse } from 'next/server';
  */
 async function getPaylinkAccessToken() {
   const res = await fetch(
-    'https://restapi.paylink.sa/api/getAccessToken',
+    'https://restapi.paylink.sa/api/auth',
+
     {
       method: 'POST',
       headers: {
